@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optional tag name (e.g. v0.1.0) to publish a release when dispatched from a branch"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive: secret-scanner-lsp-linux-x86_64.tar.gz
+            bin: secret-scanner-lsp
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            archive: secret-scanner-lsp-linux-aarch64.tar.gz
+            bin: secret-scanner-lsp
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            archive: secret-scanner-lsp-darwin-arm64.tar.gz
+            bin: secret-scanner-lsp
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            archive: secret-scanner-lsp-darwin-x86_64.tar.gz
+            bin: secret-scanner-lsp
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive: secret-scanner-lsp-windows-x86_64.zip
+            bin: secret-scanner-lsp.exe
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: v0-${{ matrix.target }}
+
+      - name: Build secret-scanner-lsp
+        run: cargo build --manifest-path crates/secret-scanner-lsp/Cargo.toml --release --target ${{ matrix.target }}
+
+      - name: Package release archive (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          mkdir -p staging
+          cp "target/${{ matrix.target }}/release/${{ matrix.bin }}" "staging/${{ matrix.bin }}"
+          chmod +x "staging/${{ matrix.bin }}"
+          tar -C staging -czf "${{ matrix.archive }}" "${{ matrix.bin }}"
+
+      - name: Package release archive (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path staging | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/${{ matrix.bin }}" "staging/${{ matrix.bin }}"
+          Compress-Archive -Path "staging/${{ matrix.bin }}" -DestinationPath "${{ matrix.archive }}" -Force
+
+      - name: Upload release archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.archive }}
+          path: ${{ matrix.archive }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/') || inputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download release archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: secret-scanner-lsp-*
+          path: dist
+          merge-multiple: true
+
+      - name: List release assets
+        run: ls -lh dist
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: dist/*

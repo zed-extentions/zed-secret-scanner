@@ -1,0 +1,12 @@
+[package]
+name = "secret-scanner-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+description = "Tier 2 pure-std secret detection rules shared by the Zed extension and secret-scanner-lsp."
+
+[dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"

@@ -1,0 +1,26 @@
+# Rust build artifacts
+/target
+**/*.rs.bk
+*.profraw
+*.profdata
+*.wasm
+
+# Environment / Secrets (API keys, tokens)
+.env
+.env.*
+!.env.example
+
+# Operating System metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor local files
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.swp
+*~
+/harness-tests/target

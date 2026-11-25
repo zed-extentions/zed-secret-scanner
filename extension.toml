@@ -1,0 +1,87 @@
+id = "secret-scanner-lsp"
+name = "Secret Scanner"
+version = "0.1.0"
+schema_version = 1
+authors = ["zed-extentions"]
+description = "Flags hardcoded secrets (cloud keys, API tokens, private keys, passwords) as inline diagnostics, powered by the secret-scanner-lsp language server."
+repository = "https://github.com/zed-extentions/zed-secret-scanner"
+
+# Secrets can be committed in any text file, so the server attaches to common
+# source, config, and documentation languages (matching Zed's official `harper`,
+# `cspell`, and `typos` multi-language extensions). Both canonical Zed extension
+# names (`CSharp`, `Docker`, `ini`, `Vue`, `Bash`) and aliases (`C#`,
+# `Dockerfile`, `INI`, `Vue.js`, `Shell Script`) are listed so every installed
+# grammar matches; languages that are not installed are simply ignored by Zed.
+[language_servers.secret-scanner-lsp]
+name = "Secret Scanner"
+languages = [
+    "Bash",
+    "C",
+    "C#",
+    "C++",
+    "CSharp",
+    "CSS",
+    "Dart",
+    "Docker",
+    "Dockerfile",
+    "Elixir",
+    "Env",
+    "env",
+    "dotenv",
+    "Git Commit",
+    "Go",
+    "HCL",
+    "HTML",
+    "INI",
+    "ini",
+    "Java",
+    "JavaScript",
+    "JSON",
+    "JSON5",
+    "JSONC",
+    "Kotlin",
+    "Lua",
+    "Makefile",
+    "Markdown",
+    "Nix",
+    "PHP",
+    "Plain Text",
+    "PowerShell",
+    "Proto",
+    "Python",
+    "Ruby",
+    "Rust",
+    "Scala",
+    "Shell Script",
+    "SQL",
+    "Svelte",
+    "Swift",
+    "Terraform",
+    "Terraform Vars",
+    "TOML",
+    "TSX",
+    "TypeScript",
+    "Vue",
+    "Vue.js",
+    "XML",
+    "YAML",
+    "Zig",
+]
+code_action_kinds = ["quickfix"]
+
+# FR-9: the server binary is downloaded from this repository's GitHub release
+# (`zed::download_file`); GitHub redirects asset downloads to its asset hosts.
+[[capabilities]]
+kind = "download_file"
+host = "github.com"
+path = ["zed-extentions", "zed-secret-scanner", "releases", "**"]
+
+[[capabilities]]
+kind = "download_file"
+host = "release-assets.githubusercontent.com"
+path = ["**"]
+
+[[capabilities]]
+kind = "download_file"
+host = "objects.githubusercontent.com"
+path = ["**"]

@@ -1,0 +1,25 @@
+[workspace]
+members = [".", "crates/secret-scanner-core", "crates/secret-scanner-lsp"]
+resolver = "2"
+
+[package]
+name = "zed_secret_scanner"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Tier 2: pure `std` domain logic shared with the Tier 3 language server.
+secret-scanner-core = { path = "crates/secret-scanner-core" }
+zed_extension_api = "0.7.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+
+[lints.rust]
+unsafe_code = "forbid"
