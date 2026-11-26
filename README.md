@@ -234,7 +234,7 @@ cargo build --target wasm32-wasip2 --release    # extension WASM build (G3)
 - [`crates/secret-scanner-core/`](crates/secret-scanner-core/) — Tier 2 pure `std` secret detection engine and unit tests.
 - [`crates/secret-scanner-lsp/`](crates/secret-scanner-lsp/) — Tier 3 native stdio LSP server, `scan` CLI, and JSON-RPC E2E tests.
 
-Architecture: [ARCHITECTURE.md](ARCHITECTURE.md) · Agent Hub: [AGENTS.md](AGENTS.md) · Plan: [PLAN.md](PLAN.md) · Requirements: [REQUIREMENTS.md](REQUIREMENTS.md)
+Architecture: [ARCHITECTURE.md](ARCHITECTURE.md) · Plan: [PLAN.md](PLAN.md) · Requirements: [REQUIREMENTS.md](REQUIREMENTS.md)
 
 ## License
 
